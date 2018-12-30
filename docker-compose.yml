@@ -1,0 +1,23 @@
+version: "3"
+
+services:
+  redisdb:
+    image: "bitnami/redis:latest"
+    environment:
+    - "ALLOW_EMPTY_PASSWORD=yes"
+    volumes:
+    - "redis-data:/bitnami/redis/data"
+  proxy:
+    build: .
+    links:
+      - redisdb
+    depends_on:
+      - redisdb
+    expose:
+      - "8080"
+    ports:
+      - "35027:8080"
+    entrypoint: hook proxy -r redisdb:6379 -x 500
+
+volumes:
+  redis-data:
